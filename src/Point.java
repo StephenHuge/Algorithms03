@@ -63,8 +63,8 @@ public class Point implements Comparable<Point> {
         if (that == null)    throw new NullPointerException();
 
         double slope;
-        int dX = that.x - x;     // distance of direction X
-        int dY = that.y - y;     // distance of direction Y
+        double dX = that.x - x;     // distance of direction X
+        double dY = that.y - y;     // distance of direction Y
 
         if (dX == 0)
         {
