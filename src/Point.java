@@ -91,8 +91,8 @@ public class Point implements Comparable<Point> {
         /* YOUR CODE HERE */
         if (that == null)    throw new NullPointerException();
 
-        int dY = that.y - y;     // distance of direction Y
-        int dX = that.x - x;     // distance of direction X
+        int dY = y - that.y;     // distance of direction Y
+        int dX = x - that.x;     // distance of direction X
 
         if (dY < 0 || (dY == 0 && dX < 0))  return -1;
         if (dY > 0 || (dY == 0 && dX > 0))  return 1;
