@@ -13,7 +13,7 @@ import edu.princeton.cs.algs4.In;
  */
 public class BruteCollinearPoints {
 
-    private Point[] points;
+    private final Point[] points;
     public BruteCollinearPoints(Point[] points)    // finds all line segments containing 4 points
     {
         validate(points);
@@ -47,6 +47,15 @@ public class BruteCollinearPoints {
     }
     public LineSegment[] segments()                // the line segments
     {
+        LineSegment[] lineSegments = new LineSegment[points.length];
+        for (int i = 0; i < points.length - 3; i++) {
+            Double[] slopes = new Double[4];
+            for (int j = i+ 1; j < i + 4; j++) {
+                slopes[j - 1] = points[i].slopeTo(points[j]);
+            }
+            // 1. checkRepeated(), if so, get max lineSegment
+            // 2. 
+        }
         return null;
     } 
     public static void main(String[] args) {
