@@ -23,18 +23,18 @@ public class BruteCollinearPoints {
      * validate method, check whether array points is null, members of points are null
      * or contains repeated points. If so, throw a java.lang.IllegalArgumentException
      */
-    private void validate(Point[] points) {
+    private void validate(Point[] points) 
+    {
         if (points == null || (repeated(points) < 0))
             throw new java.lang.IllegalArgumentException();
     }
     /**
      * check whether array points contains repeated points or members of points are null
      */
-    private int repeated(Point[] points) {
-        for (int i = 0; i < points.length; i++)
-        {
-            for (int j = i + 1; j < points.length; j++)
-            {
+    private int repeated(Point[] points) 
+    {
+        for (int i = 0; i < points.length; i++) {
+            for (int j = i + 1; j < points.length; j++) {
                 if (points[i] == null || points[j] == null
                         || points[i].compareTo(points[j]) == 0)   return -1;
             }
@@ -47,61 +47,101 @@ public class BruteCollinearPoints {
     }
     public LineSegment[] segments()                // the line segments
     {
+        int len = points.length * (points.length + 1) / 2;
+        LineSegment[] lineSegments = new LineSegment[len];  // array for storing line segments
+        Line[] lines = new Line[len];                  // array for storing lines with points and slopes
 
-        LineSegment[] lineSegments = new LineSegment[points.length * (points.length + 1) / 2];
-        double[] slopes = new double[lineSegments.length];  // array for storing slopes for segments
-
-        double slope;       // a temporary variable
-        boolean repeated = false;   // tell whether slope is repeated
-        int pivot = 0;      // a pivot to array segments and slopes
-
-        for (int i = 0; i < points.length; i++)
-        {
-            for (int j = i + 1; j < points.length; j++) 
-            {
-                slope = points[i].slopeTo(points[j]);    // current slope
-                System.out.println("check: " + points[i].toString() +
-                        " -> " + points[j].toString() +
-                        "slop is " + slope);
-                if (pivot != 0)
-                {
-                    for (int k = 0; k < pivot; k++)
-                    {
-                        if (slopes[k] == slope)     // repeated slope, ignore this one
-                        {
-                            System.out.println(lineSegments[k].toString() +
-                                    " has same slope with " +
-                                    points[i].toString() + "->" +
-                                    points[j].toString() + "ignore");
+        int pivot = 0;
+        for (int i = 0; i < points.length; i++) {
+            for (int j = i + 1; j < points.length; j++) {
+                Line l  = new Line(points[i], points[j]);
+                System.out.println("check " + l);
+                if (pivot == 0) {
+                    lines[pivot] = new Line(points[i], points[j]);       // store this line 
+                    lineSegments[pivot] = new LineSegment(points[i], points[j]);
+                    System.out.println("add new line: " + lines[pivot]);
+                    pivot++;
+                    System.out.println("-------------------");
+                } else {
+                    int p = pivot;
+                    boolean repeated = false;
+                    for (int k = 0; k < p; k++) {   // check whether there is a collinear line in the array
+                        if (l.equals(lines[k])) continue;
+                        
+                        if (l.collinear(lines[k])) {       // if 2 line Segments is in same line
+                            System.out.println("change old line " + lines[k]);
+                            lines[k] = l.getMaxLine(lines[k]);  // get "max" line for these two lines
+                            lineSegments[k] = new LineSegment(lines[k].p, lines[k].q);
+                            System.out.println("update to " + lines[k]);
+                            System.out.println("--------------------");
                             repeated = true;
-                            slope = 0;
-                            break;
                         }
                     }
+                    if (!repeated) {
+                        lines[pivot] = new Line(points[i], points[j]);       // store this line 
+                        lineSegments[pivot] = new LineSegment(points[i], points[j]);
+                        System.out.println("add new line: " + lines[pivot]);
+                        pivot++;
+                        System.out.println("--------------------");
+                    } 
                 }
-                if (!repeated)
-                {
-                    slopes[pivot] = slope;    // no repeated slope, add this one
-                    lineSegments[pivot] = new LineSegment(points[i], points[j]);
-                    System.out.println("pivot: " + pivot);
-                    pivot++;
-                }
-                slope = 0;
-                repeated = false;
             }
         }
-        if (pivot > 0) 
-        {
-            LineSegment[] newSegments = new LineSegment[pivot]; // generate a new array
-
-            for (int i = 0; i < pivot; i++)
-            {
-                newSegments[i] = lineSegments[i];
-            }
-            return newSegments;
+        LineSegment[] newSegments = new LineSegment[pivot];
+        for (int i = 0; i < pivot; i++) {
+            newSegments[i] = lineSegments[i];
         }
-        return null;
+        return newSegments;
     }
+
+    private static class Line {
+        Point p;
+        Point q;
+        double slope;
+        public Line(Point p, Point q) {
+            super();
+            this.p = p;
+            this.q = q;
+            this.slope = p.slopeTo(q);
+        }
+        public Line getMaxLine(Line line) {
+            Point[] points = {p, q, line.p, line.q};
+            Point min = points[0];
+            Point max = points[0];
+            for (Point p : points) {
+                if (p.compareTo(min) < 0)         min = p;
+                else if (p.compareTo(max) > 0)    max = p;
+            }
+            return new Line(min, max);
+        }
+        @Override
+        public String toString() {
+            return "Line: " + p + " -> " + q;
+        }
+        @Override
+        public boolean equals(Object line) {
+            Line l = (Line) line;
+            if (this.slope == l.slope && 
+                    this.p.equals(l.p) && 
+                    this.q.compareTo(l.q) ==0) {
+                return true; 
+            }
+            return false;
+        }
+        public boolean collinear(Line line) {
+            if (this.slope == line.slope) {
+                if (this.p.compareTo(line.p) == 0 ||
+                        this.p.compareTo(line.q) == 0 ||
+                        this.q.compareTo(line.p) == 0 ||
+                        this.q.compareTo(line.q) == 0) {
+                    return true;
+                }
+                return false;
+            }   
+            return false;
+        }
+
+    } 
     public static void main(String[] args) {
         In in = new In(args[0]);
         int n = in.readInt();
@@ -118,5 +158,74 @@ public class BruteCollinearPoints {
             System.out.println("line segments: " + i + ls[i]);
         System.out.println("----------------------------------------");
         System.out.println("count of slopes is " + ls.length);
+        /*Point[] points = new Point[4];
+
+        points[0] = new Point(0, 0);
+        points[1] = new Point(1, 1);
+        points[2] = new Point(2, 2);
+        points[3] = new Point(0, 2);
+
+        for (int i = 0; i < points.length; i++) {
+            for (int j = i + 1; j < points.length; j++) {
+                Line l1 = new Line(points[i], points[j]);
+                for (int k = j + 1; k < points.length; k++) {
+                    Line l2 = new Line(points[i], points[k]);
+                    if (l1.collinear(l2)) {
+                        System.out.println(l1.toString() + " and " + l2.toString() + " is in the same line");
+                        System.out.println("Max Line :" + l1.getMaxLine(l2));
+                    }
+                    else 
+                        System.out.println(l1.toString() + " and " + l2.toString() + " is not in the same line");
+                }
+            }
+        }*/
+
     }
 }
+/*double slope;                // a temporary variable to record slope between points
+        boolean repeating = false;   // tell whether line segment' slope is repeated, if so, don't store it
+        int pivot = 0;               // a pivot to array segments and slopes
+
+        for (int i = 0; i < points.length; i++)
+        {
+            for (int j = i + 1; j < points.length; j++) 
+            {
+                slope = points[i].slopeTo(points[j]);    // current slope
+                System.out.println("check: " + points[i].toString() + " -> " + 
+                                               points[j].toString() + "slop is " + slope);
+                if (pivot != 0)     // check whether there are repeating slope with same points
+                {
+                    for (int k = 0; k < pivot; k++)
+                    {
+                        if (slopes[k] == slope)         // repeated slope, ignore this one
+                        {
+                            System.out.println(lineSegments[k].toString() + " has same slope with " +
+                                               points[i].toString() + "->" + points[j].toString() + "ignore");
+                            repeating = true;
+                            slope = 0;
+                            break;
+                        }
+                    }
+                }
+                if (!repeating)
+                {
+                    slopes[pivot] = slope;    // no repeated slope, add this one
+                    lineSegments[pivot] = new LineSegment(points[i], points[j]);
+                    System.out.println("pivot: " + pivot);
+                    pivot++;
+                }
+                slope = 0;                  // reset slope 
+                repeating = false;      // reset repeating 
+            }
+        }
+
+        if (pivot > 0)   
+        {
+            LineSegment[] newSegments = new LineSegment[pivot]; // generate a new array
+
+            for (int i = 0; i < pivot; i++)
+            {
+                newSegments[i] = lineSegments[i];
+            }
+            return newSegments;
+        }*/
