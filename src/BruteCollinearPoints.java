@@ -47,100 +47,7 @@ public class BruteCollinearPoints {
     }
     public LineSegment[] segments()                // the line segments
     {
-        int len = points.length * (points.length + 1) / 2;
-        LineSegment[] lineSegments = new LineSegment[len];  // array for storing line segments
-        Line[] lines = new Line[len];                  // array for storing lines with points and slopes
-
-        int pivot = 0;
-        for (int i = 0; i < points.length; i++) {
-            for (int j = i + 1; j < points.length; j++) {
-                Line l  = new Line(points[i], points[j]);
-                System.out.println("check " + l);
-                if (pivot == 0) {
-                    lines[pivot] = new Line(points[i], points[j]);       // store this line 
-                    lineSegments[pivot] = new LineSegment(points[i], points[j]);
-                    System.out.println("add new line: " + lines[pivot]);
-                    pivot++;
-                    System.out.println("-------------------");
-                } else {
-                    int p = pivot;
-                    boolean repeated = false;
-                    for (int k = 0; k < p; k++) {   // check whether there is a collinear line in the array
-                        if (l.equals(lines[k])) continue;
-                        
-                        if (l.collinear(lines[k])) {       // if 2 line Segments is in same line
-                            System.out.println("change old line " + lines[k]);
-                            lines[k] = l.getMaxLine(lines[k]);  // get "max" line for these two lines
-                            lineSegments[k] = new LineSegment(lines[k].p, lines[k].q);
-                            System.out.println("update to " + lines[k]);
-                            System.out.println("--------------------");
-                            repeated = true;
-                        }
-                    }
-                    if (!repeated) {
-                        lines[pivot] = new Line(points[i], points[j]);       // store this line 
-                        lineSegments[pivot] = new LineSegment(points[i], points[j]);
-                        System.out.println("add new line: " + lines[pivot]);
-                        pivot++;
-                        System.out.println("--------------------");
-                    } 
-                }
-            }
-        }
-        LineSegment[] newSegments = new LineSegment[pivot];
-        for (int i = 0; i < pivot; i++) {
-            newSegments[i] = lineSegments[i];
-        }
-        return newSegments;
-    }
-
-    private static class Line {
-        Point p;
-        Point q;
-        double slope;
-        public Line(Point p, Point q) {
-            super();
-            this.p = p;
-            this.q = q;
-            this.slope = p.slopeTo(q);
-        }
-        public Line getMaxLine(Line line) {
-            Point[] points = {p, q, line.p, line.q};
-            Point min = points[0];
-            Point max = points[0];
-            for (Point p : points) {
-                if (p.compareTo(min) < 0)         min = p;
-                else if (p.compareTo(max) > 0)    max = p;
-            }
-            return new Line(min, max);
-        }
-        @Override
-        public String toString() {
-            return "Line: " + p + " -> " + q;
-        }
-        @Override
-        public boolean equals(Object line) {
-            Line l = (Line) line;
-            if (this.slope == l.slope && 
-                    this.p.equals(l.p) && 
-                    this.q.compareTo(l.q) ==0) {
-                return true; 
-            }
-            return false;
-        }
-        public boolean collinear(Line line) {
-            if (this.slope == line.slope) {
-                if (this.p.compareTo(line.p) == 0 ||
-                        this.p.compareTo(line.q) == 0 ||
-                        this.q.compareTo(line.p) == 0 ||
-                        this.q.compareTo(line.q) == 0) {
-                    return true;
-                }
-                return false;
-            }   
-            return false;
-        }
-
+        return null;
     } 
     public static void main(String[] args) {
         In in = new In(args[0]);
@@ -155,7 +62,7 @@ public class BruteCollinearPoints {
         BruteCollinearPoints bcp = new BruteCollinearPoints(points);
         LineSegment[] ls = bcp.segments();
         for (int i = 0; i < ls.length; i++) 
-            System.out.println("line segments: " + i + ls[i]);
+            System.out.println(ls[i]);
         System.out.println("----------------------------------------");
         System.out.println("count of slopes is " + ls.length);
     }
