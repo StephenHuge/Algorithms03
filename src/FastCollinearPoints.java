@@ -68,11 +68,11 @@ public class FastCollinearPoints {
             }
             Merge.sort(lines);      // sort array slopes
 
-            System.out.println("------------");
-            System.out.println("Lines: ");
-            for (Line l : lines)
-                System.out.println(l + " ");
-            System.out.println("------------");
+//            System.out.println("------------");
+//            System.out.println("Lines: ");
+//            for (Line l : lines)
+//                System.out.println(l + " ");
+//            System.out.println("------------");
 
             int pivotL = 0;      // pivot left to multiple array slopes
             int pivotR = 1;      // pivot right to multiple array slopes
@@ -87,8 +87,8 @@ public class FastCollinearPoints {
                         lineSegments[index] = new LineSegment(lines[pivotL].start, lines[pivotR - 1].end);
                         index++;
                         
-                        System.out.println("Max Line: ");
-                        System.out.println(l.start + " -> " + l.end);
+//                        System.out.println("Max Line: ");
+//                        System.out.println(l.start + " -> " + l.end);
                     }
                 }
                 pivotL = pivotR;
@@ -109,7 +109,7 @@ public class FastCollinearPoints {
             if (max[i].getSlope() == l.getSlope() && l.hasSameEndPoint(max[i])) {
                 if (l.start.compareTo(max[i].start) >= 0 &&
                         l.end.compareTo(max[i].end) <= 0) {
-                    System.out.println("repeated" + l.start + " -> " + l.end);
+//                    System.out.println("repeated" + l.start + " -> " + l.end);
                     return false;
                 }
             }
@@ -177,9 +177,9 @@ public class FastCollinearPoints {
         }
         FastCollinearPoints fcp = new FastCollinearPoints(points);
         LineSegment[] ls = fcp.segments();
-        System.out.println("----------------------------------------");
+//        System.out.println("----------------------------------------");
         for (int i = 0; i < ls.length; i++) 
             System.out.println(ls[i]);
-        System.out.println("count of slopes is " + ls.length);
+//        System.out.println("count of slopes is " + ls.length);
     }
 }

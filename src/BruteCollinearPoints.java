@@ -176,9 +176,9 @@ public class BruteCollinearPoints {
         }
         BruteCollinearPoints bcp = new BruteCollinearPoints(points);
         LineSegment[] ls = bcp.segments();
-        System.out.println("----------------------------------------");
+//        System.out.println("----------------------------------------");
         for (int i = 0; i < ls.length; i++) 
             System.out.println(ls[i]);
-        System.out.println("count of slopes is " + ls.length);
+//        System.out.println("count of slopes is " + ls.length);
     }
 }
