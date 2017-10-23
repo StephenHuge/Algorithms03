@@ -7,6 +7,7 @@ public class TestClient {
 
         // read the n points from a file
         In in = new In(args[0]);
+//        In in = new In("src/input56.txt");
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {
@@ -32,5 +33,13 @@ public class TestClient {
             segment.draw();
         }
         StdDraw.show();
+        while (true) {
+            if (StdDraw.isKeyPressed(0x20)) {
+                StdDraw.pause(500);
+                StdDraw.clear();    
+                break;
+            }
+        }
+            
     }
 }
