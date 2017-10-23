@@ -6,9 +6,7 @@ public class SuperTestClient {
 
         String name;
         while((name = in.readLine()) != null) {
-            System.out.println("Start showing: " + name);
             TestClient.main(new String[]{"src/" + name});
-            continue;
         }
     }
 }

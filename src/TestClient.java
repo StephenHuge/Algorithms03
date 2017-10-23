@@ -7,7 +7,8 @@ public class TestClient {
 
         // read the n points from a file
         In in = new In(args[0]);
-//        In in = new In("src/input56.txt");
+        System.out.println("Start showing " + args[0]);
+        
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {
@@ -26,13 +27,16 @@ public class TestClient {
         StdDraw.show();
 
         // print and draw the line segments
-//        FastCollinearPoints collinear = new FastCollinearPoints(points);
-        BruteCollinearPoints collinear = new BruteCollinearPoints(points);
-        for (LineSegment segment : collinear.segments()) {
+        FastCollinearPoints collinear = new FastCollinearPoints(points);
+//        BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+        LineSegment[] ls = collinear.segments();
+        for (LineSegment segment : ls) {
             StdOut.println(segment);
             segment.draw();
         }
         StdDraw.show();
+        System.out.println("count of slopes is " + ls.length);
+        System.out.println("End showing " + args[0]);
         while (true) {
             if (StdDraw.isKeyPressed(0x20)) {
                 StdDraw.pause(500);
