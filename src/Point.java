@@ -121,8 +121,8 @@ public class Point implements Comparable<Point> {
                 double slope1 = slopeTo(p1);
                 double slope2 = slopeTo(p2);
 
-                if (slope1 > slope2)     return 1;
-                if (slope1 < slope2)     return -1;
+                if (Double.compare(slope1, slope2) > 0)     return 1;
+                if (Double.compare(slope1, slope2) < 0)     return -1;
                 return 0;
             }
         };
