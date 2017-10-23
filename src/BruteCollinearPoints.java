@@ -15,8 +15,6 @@ public class BruteCollinearPoints {
 
     private final Point[] points;
 
-    private static final boolean log = false;
-
     public BruteCollinearPoints(Point[] points)    // finds all line segments containing 4 points
     {
         validate(points);
@@ -66,21 +64,6 @@ public class BruteCollinearPoints {
 
                         
                         if (collinear(slopes)) {        // three slope are collinear
-                            if (!log) {
-                                Point[] fourPoints = { points[i], points[j], points[k], points[m] };
-                                System.out.println("----------------------------------------------------------------------");
-                                System.out.println("Calculate Four points' slopes: ");
-                                for (Point p : fourPoints)
-                                    System.out.print(p + "\t");
-                                System.out.println();
-                                System.out.println("Three slopes: ");
-                                for (Double s : slopes)
-                                    System.out.print(s + " \t");
-                                System.out.println();
-                                System.out.println("collinear");
-                                System.out.println("--------------------------------------------------------");
-                            }
-                            
                             Line line = getMaxLine(points, i, j, k, m);   // get one max line
                             int repeated = 0;
                             repeated = line.notRepeated(lines);
@@ -95,23 +78,11 @@ public class BruteCollinearPoints {
                                 lines[repeated] = line;
                                 lineSegments[repeated] = new LineSegment(lines[repeated].min, lines[repeated].max);
                             } 
-                        } else {
-//                            System.out.println(" not collinear");
-                        }
+                        } 
                     }
                 }
             }
         }
-
-        if (!log) {
-            System.out.println(" Answer : \n" + " Lines: ");
-            for (Line l : lines) {
-                if (l == null)  break;
-                System.out.print(l + " ");
-            }
-            System.out.println();
-        }
-
         lineSegments = trim(lineSegments, pivot);    // trim array lineSegments with no null elements
         return lineSegments;
     } 
@@ -126,23 +97,10 @@ public class BruteCollinearPoints {
         Point min = points[start];
         Point max = points[start];
         Point[] fourPoints = {points[start], points[end1], points[end2], points[end3]};
-
-        if (!log) {
-            System.out.println("Get max line: ");
-//            for (Point p : fourPoints)
-//                System.out.print(p + "\t");
-//            System.out.println();
-        }
-
         for (int i = 0; i < fourPoints.length; i++) {
             if (fourPoints[i].compareTo(min) < 0)   min = fourPoints[i];
             if (fourPoints[i].compareTo(max) > 0)   max = fourPoints[i];
         }
-
-        if (!log) {
-            System.out.println("min: " + min + ", max: " + max);
-        }
-
         return new Line(min, max);
     }
     private boolean collinear(Double[] slopes) {
@@ -152,7 +110,7 @@ public class BruteCollinearPoints {
         }
         return true;
     }
-    static class Line {
+    private static class Line {
         Point min;
         Point max;
         public Line(Point min, Point max) {
@@ -169,44 +127,16 @@ public class BruteCollinearPoints {
          * of the array, else return {@code -1}.
          */
         public int notRepeated(Line[] lines) {
-
-            if (!log) {
-                System.out.println("check lines repeated \n Lines before \n---------");
-                for (Line l : lines) {
-                    if (l == null)
-                        break;
-                    System.out.print(l + " ");
-                }
-                System.out.println();
-                System.out.println("---------");
-            }
-
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i] == null)  break;
                 if (getSlope() == lines[i].getSlope() && hasSameEndPoint(lines[i])) {   // have same slope
-                    System.out.println(this.toString() + ": " + getSlope() + ", - " + lines[i].toString() + 
-                                    ":  " + lines[i].getSlope()+"  has same slope");
-                    if (!log) {
-                        System.out.println("check: " + this.toString() + " - " + lines[i].toString());
-                        System.out.println(this.min.compareTo(lines[i].min) <= 0);
-                        System.out.println(this.max.compareTo(lines[i].max) >= 0);
-                    }
-                    
                     if (this.min.compareTo(lines[i].min) <= 0 
                             && this.max.compareTo(lines[i].max) >= 0) {
-
-                        if (!log) System.out.println("repeated & repalce ");
-
                         return i;
                     }
                     return -2;  // same slope but "smaller", just ignore this line
                 }
             }
-
-            if (!log) {
-                System.out.println("not repeated & add ");
-            }
-
             return -1;
         }
         public boolean hasSameEndPoint(Line line) {
