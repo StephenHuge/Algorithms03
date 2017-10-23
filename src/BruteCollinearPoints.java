@@ -20,11 +20,18 @@ public class BruteCollinearPoints {
     public BruteCollinearPoints(Point[] ps)    // finds all line segments containing 4 points
     {
         validate(ps);
-        this.points = ps;
+        this.points = copy(ps);
+    }
+    private Point[] copy(Point[] ps) {
+        Point[] copy = new Point[ps.length];
+        for (int i = 0; i < ps.length; i++) {
+            copy[i] = ps[i];
+        }
+        return copy;
     }
     /**
      * validate method, check whether array points is null, members of points are null
-     * or contains repeated points. If so, throw a java.lang.IllegalArgumentException
+     * or contain repeated points. If so, throw a java.lang.IllegalArgumentException
      */
     private void validate(Point[] ps) 
     {
@@ -51,11 +58,8 @@ public class BruteCollinearPoints {
     }
     public int numberOfSegments()        // the number of line segments
     {
-        if (length == 0) {
-            return segments().length;
-        } else {
-            return length;
-        }
+        if (length == 0)    length = segments().length;
+        return length;
     }
     public LineSegment[] segments()                // the line segments
     {
@@ -114,7 +118,7 @@ public class BruteCollinearPoints {
     private boolean collinear(double[] slopes) {
         double start = slopes[0];
         for (int i = 1; i < slopes.length; i++) {
-            if (start != slopes[i])     return false;
+            if (Double.compare(start, slopes[i]) != 0)     return false;
         }
         return true;
     }
@@ -137,7 +141,8 @@ public class BruteCollinearPoints {
         public int notRepeated(Line[] lines) {
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i] == null)  break;
-                if (getSlope() == lines[i].getSlope() && hasSameEndPoint(lines[i])) {   // have same slope
+                if (Double.compare(getSlope(), lines[i].getSlope()) == 0
+                        && hasSameEndPoint(lines[i])) {   // have same slope
                     if (this.min.compareTo(lines[i].min) <= 0 
                             && this.max.compareTo(lines[i].max) >= 0) {
                         return i;

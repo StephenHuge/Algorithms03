@@ -94,10 +94,14 @@ public class Point implements Comparable<Point> {
         int dY = y - that.y;     // distance of direction Y
         int dX = x - that.x;     // distance of direction X
 
-        if (dY < 0 || (dY == 0 && dX < 0))  return -1;
-        if (dY > 0 || (dY == 0 && dX > 0))  return 1;
+        if (dY < 0)  return -1;
+        if (dY > 0)  return 1;
+        else {
+            if (dX < 0)  return -1;        
+            if (dX > 0)  return 1;
+            return 0;
+        }
 
-        return 0;
     }
 
     /**
@@ -152,7 +156,7 @@ public class Point implements Comparable<Point> {
         {
             for (int j = 0; j < points.length; j++)
             {
-//                printSlope(points[i], points[j]);
+                //                printSlope(points[i], points[j]);
                 printCompare(points[i], points[j]); 
                 printOrder(points[0], points[i], points[j]);
                 System.out.println("--------------------------");

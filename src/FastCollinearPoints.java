@@ -3,9 +3,9 @@ import edu.princeton.cs.algs4.Merge;
 
 public class FastCollinearPoints {
 
-    private Point[] points;
+    private final Point[] points;
 
-    private int length;
+    private int length = 0;
 
     public FastCollinearPoints(Point[] ps)     // finds all line segments containing 4 or more points
     {
@@ -48,8 +48,8 @@ public class FastCollinearPoints {
     }
     public int numberOfSegments()                  // the number of line segments
     {
-        if (length == 0)    return segments().length;
-        else                return length;
+        if (length == 0)    length = segments().length;
+        return length;
     }
     public LineSegment[] segments()                // the line segments
     {
@@ -78,12 +78,13 @@ public class FastCollinearPoints {
             int pivotR = 1;      // pivot right to multiple array slopes
             
             while (pivotL < lines.length && pivotR < lines.length) {
-                while (pivotR < lines.length && lines[pivotL].getSlope() == lines[pivotR].getSlope())
+                while (pivotR < lines.length && 
+                        Double.compare(lines[pivotL].getSlope(), lines[pivotR].getSlope()) == 0)
                     pivotR++;
                 if (pivotR - pivotL >= 3) {
-                    Line l = new Line(lines[pivotL].start, lines[pivotR - 1].end);
-                    if (notRepeated(max, l)) {
-                        max[index] = l;
+                    Line line = new Line(lines[pivotL].start, lines[pivotR - 1].end);
+                    if (notRepeated(max, line)) {
+                        max[index] = line;
                         lineSegments[index] = new LineSegment(lines[pivotL].start, lines[pivotR - 1].end);
                         index++;
                         
@@ -106,7 +107,7 @@ public class FastCollinearPoints {
 //            System.out.println("max " + max[i].start + " " + max[i].end);
 //            System.out.println("l " + l.start + " " + l.end);
             
-            if (max[i].getSlope() == l.getSlope() && l.hasSameEndPoint(max[i])) {
+            if (Double.compare(max[i].getSlope(), l.getSlope()) == 0 && l.hasSameEndPoint(max[i])) {
                 if (l.start.compareTo(max[i].start) >= 0 &&
                         l.end.compareTo(max[i].end) <= 0) {
 //                    System.out.println("repeated" + l.start + " -> " + l.end);
@@ -123,7 +124,7 @@ public class FastCollinearPoints {
         }
         return newSegments;
     }
-    private class Line implements Comparable<Line>{
+    private class Line implements Comparable<Line> {
         Point start;
         Point end;
         public Line(Point p1, Point p2) {
@@ -157,8 +158,9 @@ public class FastCollinearPoints {
 
         @Override
         public int compareTo(Line line) {
-            if (this.getSlope() < line.getSlope())  return -1;
-            if (this.getSlope() > line.getSlope())  return 1;
+            int ans = Double.compare(this.getSlope(), line.getSlope());
+            if (ans < 0)  return -1;
+            if (ans > 0)  return 1;
             else {
                 if (this.end.compareTo(line.end) < 0)   return -1;
                 if (this.end.compareTo(line.end) > 0)   return 1;
