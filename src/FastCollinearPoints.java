@@ -99,7 +99,7 @@ public class FastCollinearPoints {
         lineSegments = trim(lineSegments, index);
         return lineSegments;
     }
-    private boolean notRepeated(Line[] max, Line l) {
+    private boolean notRepeated(Line[] max, Line line) {
         if (max[0] == null) return true;
         for (int i = 0; i < max.length; i++) {
             if (max[i] == null)     break;
@@ -107,9 +107,10 @@ public class FastCollinearPoints {
 //            System.out.println("max " + max[i].start + " " + max[i].end);
 //            System.out.println("l " + l.start + " " + l.end);
             
-            if (Double.compare(max[i].getSlope(), l.getSlope()) == 0 && l.hasSameEndPoint(max[i])) {
-                if (l.start.compareTo(max[i].start) >= 0 &&
-                        l.end.compareTo(max[i].end) <= 0) {
+            if (Double.compare(max[i].getSlope(), line.getSlope()) == 0 && 
+                    line.hasSameEndPoint(max[i])) {
+                if (line.start.compareTo(max[i].start) >= 0 &&
+                        line.end.compareTo(max[i].end) <= 0) {
 //                    System.out.println("repeated" + l.start + " -> " + l.end);
                     return false;
                 }
