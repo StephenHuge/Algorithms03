@@ -15,29 +15,34 @@ public class BruteCollinearPoints {
 
     private final Point[] points;
 
-    public BruteCollinearPoints(Point[] points)    // finds all line segments containing 4 points
+    public BruteCollinearPoints(Point[] ps)    // finds all line segments containing 4 points
     {
-        validate(points);
-        this.points = points;
+        validate(ps);
+        this.points = ps;
     }
     /**
      * validate method, check whether array points is null, members of points are null
      * or contains repeated points. If so, throw a java.lang.IllegalArgumentException
      */
-    private void validate(Point[] points) 
+    private void validate(Point[] ps) 
     {
-        if (points == null || (repeated(points) < 0))
+        if (ps == null || (repeated(ps) < 0) || validateNullEntry(ps))
             throw new java.lang.IllegalArgumentException();
+    }
+    private boolean validateNullEntry(Point[] ps) {
+        for (Point p : ps)
+            if (p == null)  return true;
+        return false;
     }
     /**
      * check whether array points contains repeated points or members of points are null
      */
-    private int repeated(Point[] points) 
+    private int repeated(Point[] ps) 
     {
-        for (int i = 0; i < points.length; i++) {
-            for (int j = i + 1; j < points.length; j++) {
-                if (points[i] == null || points[j] == null
-                        || points[i].compareTo(points[j]) == 0)   return -1;
+        for (int i = 0; i < ps.length; i++) {
+            for (int j = i + 1; j < ps.length; j++) {
+                if (ps[i] == null || ps[j] == null
+                        || ps[i].compareTo(ps[j]) == 0)   return -1;
             }
         }
         return 1;
@@ -54,14 +59,13 @@ public class BruteCollinearPoints {
         int pivot = 0;          // pivot for array lineSegments
 
         for (int i = 0; i < points.length - 3; i++) {
-            Double[] slopes = new Double[3];
+            double[] slopes = new double[3];
             for (int j = i+ 1; j < points.length - 2; j++) {
                 slopes[0] = points[i].slopeTo(points[j]);           // first line
                 for (int k = j + 1; k < points.length - 1; k++) {
                     slopes[1] = points[i].slopeTo(points[k]);       // second line
                     for (int m = k + 1; m < points.length; m++) {
                         slopes[2] = points[i].slopeTo(points[m]);   // third line
-
                         
                         if (collinear(slopes)) {        // three slope are collinear
                             Line line = getMaxLine(points, i, j, k, m);   // get one max line
@@ -72,9 +76,7 @@ public class BruteCollinearPoints {
                                 lines[pivot] = line;
                                 lineSegments[pivot] = new LineSegment(line.min, line.max);
                                 pivot++;
-                            } else if (repeated == -2) {
-                                // do nothing  
-                            } else {            // line repeated, replace the old repeated one with a new one
+                            } else if (repeated != -2) { // line repeated, replace the old repeated one with a new one
                                 lines[repeated] = line;
                                 lineSegments[repeated] = new LineSegment(lines[repeated].min, lines[repeated].max);
                             } 
@@ -93,7 +95,7 @@ public class BruteCollinearPoints {
         }
         return newSegments;
     }
-    private Line getMaxLine(Point[] points2, int start, int end1, int end2, int end3) {
+    private Line getMaxLine(Point[] points, int start, int end1, int end2, int end3) {
         Point min = points[start];
         Point max = points[start];
         Point[] fourPoints = {points[start], points[end1], points[end2], points[end3]};
@@ -103,7 +105,7 @@ public class BruteCollinearPoints {
         }
         return new Line(min, max);
     }
-    private boolean collinear(Double[] slopes) {
+    private boolean collinear(double[] slopes) {
         double start = slopes[0];
         for (int i = 1; i < slopes.length; i++) {
             if (start != slopes[i])     return false;
