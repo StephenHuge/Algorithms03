@@ -1,4 +1,4 @@
+input6.txt 
+input8.txt
 input50.txt
 input56.txt
-input6.txt
-input8.txt
