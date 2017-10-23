@@ -48,16 +48,70 @@ public class BruteCollinearPoints {
     public LineSegment[] segments()                // the line segments
     {
         LineSegment[] lineSegments = new LineSegment[points.length];
+        int pivot = 0;          // pivot for array lineSegments
         for (int i = 0; i < points.length - 3; i++) {
-            Double[] slopes = new Double[4];
-            for (int j = i+ 1; j < i + 4; j++) {
-                slopes[j - 1] = points[i].slopeTo(points[j]);
+            Double[] slopes = new Double[3];
+            for (int j = i+ 1; j < points.length - 2; j++) {
+                slopes[0] = points[i].slopeTo(points[j]);           // first line
+                for (int k = j + 1; k < points.length - 1; k++) {
+                    slopes[1] = points[i].slopeTo(points[k]);       // second line
+                    for (int m = k + 1; m < points.length; m++) {
+                        slopes[2] = points[i].slopeTo(points[m]);   // third line
+                        
+//                        Point[] fourPoints = {points[i], points[j], points[k], points[m]};
+//                        System.out.println("Four points: ");
+//                        for (Point p : fourPoints)
+//                            System.out.print(p + "\t");
+//                        System.out.println();
+//                        System.out.println("Three slopes: ");
+//                        for (Double s : slopes)
+//                            System.out.print(s + " \t");
+//                        System.out.println();
+//                        System.out.println("--------------");
+                        
+                        if (collinear(slopes)) {
+                            lineSegments[pivot++] = getMaxLine(points, i, j, k, m);   // get one max line
+                        }
+                    }
+                }
             }
-            // 1. checkRepeated(), if so, get max lineSegment
-            // 2. 
         }
-        return null;
+        lineSegments = trim(lineSegments, pivot);    // trim array lineSegments with no null elements
+        return lineSegments;
     } 
+    private LineSegment[] trim(LineSegment[] lineSegments, int pivot) {
+        LineSegment[] newSegments = new LineSegment[pivot];
+        for (int i = 0; i < pivot; i++) {
+            newSegments[i] = lineSegments[i];
+        }
+        return newSegments;
+    }
+    private LineSegment getMaxLine(Point[] points2, int start, int end1, int end2, int end3) {
+        Point min = points[start];
+        Point max = points[start];
+        Point[] fourPoints = {points[start], points[end1], points[end2], points[end3]};
+        
+//        System.out.println("Four points: ");
+//        for (Point p : fourPoints)
+//            System.out.print(p + "\t");
+//        System.out.println();
+        
+        for (int i = 0; i < fourPoints.length; i++) {
+            if (fourPoints[i].compareTo(min) < 0)   min = fourPoints[i];
+            if (fourPoints[i].compareTo(max) > 0)   max = fourPoints[i];
+        }
+        
+//        System.out.println("min: " + min + ", max: " + max);
+        
+        return new LineSegment(min, max);
+    }
+    private boolean collinear(Double[] slopes) {
+        double start = slopes[0];
+        for (int i = 1; i < slopes.length; i++) {
+            if (start != slopes[i])     return false;
+        }
+        return true;
+    }
     public static void main(String[] args) {
         In in = new In(args[0]);
         int n = in.readInt();
@@ -72,7 +126,7 @@ public class BruteCollinearPoints {
         LineSegment[] ls = bcp.segments();
         for (int i = 0; i < ls.length; i++) 
             System.out.println(ls[i]);
-        System.out.println("----------------------------------------");
-        System.out.println("count of slopes is " + ls.length);
+//        System.out.println("----------------------------------------");
+//        System.out.println("count of slopes is " + ls.length);
     }
 }
