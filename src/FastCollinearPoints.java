@@ -55,7 +55,7 @@ public class FastCollinearPoints {
     {
         int len = points.length * (points.length + 1) / 2;
         LineSegment[] lineSegments = new LineSegment[len];
-        Line[] max = new Line[points.length];
+        Line[] max = new Line[len];
         int index = 0;      // index for lineSegments 
 
         for (int i = 0; i < points.length; i++) {
