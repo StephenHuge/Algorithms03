@@ -60,18 +60,18 @@ public class BruteCollinearPoints {
                     if (ps[i] == ps[k]) continue;
                     if (ps[j] == ps[k]) continue;
                     if (comparator.compare(points[j], points[k]) == 0) {
-                        //                        System.out.println(String.format("i = %d %s, j = %d %s, k = %d %s",
-                        //                                i, ps[i].toString(), 
-                        //                                j, ps[j].toString(),
-                        //                                k, ps[k].toString()));
+//                        System.out.println(String.format("i = %d %s, j = %d %s, k = %d %s",
+//                                i, ps[i].toString(), 
+//                                j, ps[j].toString(),
+//                                k, ps[k].toString()));
                         for (int m = k + 1; m < ps.length; m++) {
                             if (ps[i] == ps[m]) continue;
                             if (ps[j] == ps[m]) continue;
                             if (ps[k] == ps[m]) continue;
                             if (comparator.compare(ps[k], ps[m]) == 0) {
                                 lineSegments[pivot++] = new LineSegment(ps[i], ps[m]);
-                                //                                System.out.println(String.format("line segment: %s",
-                                //                                        lineSegments[pivot - 1].toString()));
+//                                System.out.println(String.format("line segment: %s",
+//                                        lineSegments[pivot - 1].toString()));
                             }
                         }
                     }
