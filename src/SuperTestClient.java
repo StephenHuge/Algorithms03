@@ -6,7 +6,7 @@ public class SuperTestClient {
 
         String name;
         while((name = in.readLine()) != null) {
-            TestClient.main(new String[]{"src/" + name});
+            TestClient.main(new String[]{"src/" + name, "2"});
         }
     }
 }

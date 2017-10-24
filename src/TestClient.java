@@ -27,9 +27,15 @@ public class TestClient {
         StdDraw.show();
 
         // print and draw the line segments
-        FastCollinearPoints collinear = new FastCollinearPoints(points);
-//        BruteCollinearPoints collinear = new BruteCollinearPoints(points);
-        LineSegment[] ls = collinear.segments();
+        LineSegment[] ls;
+        if (args[1] == "1") {
+            BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+            ls = collinear.segments();
+        } else {
+            FastCollinearPoints collinear = new FastCollinearPoints(points);
+            ls = collinear.segments();
+        }
+        
         for (LineSegment segment : ls) {
             StdOut.println(segment);
             segment.draw();
