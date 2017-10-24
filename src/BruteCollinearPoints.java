@@ -32,7 +32,6 @@ public class BruteCollinearPoints {
         Arrays.sort(points);
 
         lineSegments = new LineSegment[ps.length * (ps.length + 1) / 2];
-
         generateSegments(points);
     }
     /**
@@ -40,8 +39,8 @@ public class BruteCollinearPoints {
      * or contain repeated points. If so, throw a java.lang.IllegalArgumentException
      */
     private void validate(Point[] ps) {
-        if (ps == null)     throw new java.lang.IllegalArgumentException();
-
+        if (ps == null || (ps.length == 1 && ps[0] == null))     
+            throw new java.lang.IllegalArgumentException();
         for (int i = 0; i < ps.length; i++) {   // check whether null entry or repeated ones exist
             for (int j = i + 1; j < ps.length; j++) {
                 if (ps[i] == null || ps[j] == null || 
@@ -61,18 +60,18 @@ public class BruteCollinearPoints {
                     if (ps[i] == ps[k]) continue;
                     if (ps[j] == ps[k]) continue;
                     if (comparator.compare(points[j], points[k]) == 0) {
-//                        System.out.println(String.format("i = %d %s, j = %d %s, k = %d %s",
-//                                i, ps[i].toString(), 
-//                                j, ps[j].toString(),
-//                                k, ps[k].toString()));
+                        //                        System.out.println(String.format("i = %d %s, j = %d %s, k = %d %s",
+                        //                                i, ps[i].toString(), 
+                        //                                j, ps[j].toString(),
+                        //                                k, ps[k].toString()));
                         for (int m = k + 1; m < ps.length; m++) {
                             if (ps[i] == ps[m]) continue;
                             if (ps[j] == ps[m]) continue;
                             if (ps[k] == ps[m]) continue;
                             if (comparator.compare(ps[k], ps[m]) == 0) {
                                 lineSegments[pivot++] = new LineSegment(ps[i], ps[m]);
-//                                System.out.println(String.format("line segment: %s",
-//                                        lineSegments[pivot - 1].toString()));
+                                //                                System.out.println(String.format("line segment: %s",
+                                //                                        lineSegments[pivot - 1].toString()));
                             }
                         }
                     }
@@ -80,6 +79,7 @@ public class BruteCollinearPoints {
             }
         }
         length = pivot;      // keep pivot empty
+        lineSegments = trim(lineSegments);
     }
     public int numberOfSegments()        // the number of line segments
     {
@@ -87,16 +87,19 @@ public class BruteCollinearPoints {
     }
     public LineSegment[] segments()                // the line segments
     {
-        lineSegments = trim(lineSegments);
-        return lineSegments;
+        LineSegment[] newSegments = new LineSegment[length];
+        for (int i = 0; i < length; i++) {
+            newSegments[i] = lineSegments[i];
+        }
+        return newSegments;
     } 
     /**
      * trim lineSegments to array with no null entry
      */
-    private LineSegment[] trim(LineSegment[] lineSegments) {
+    private LineSegment[] trim(LineSegment[] mSegments) {
         LineSegment[] segments = new LineSegment[length];
         for (int i = 0; i < length; i++) {
-            segments[i] = lineSegments[i];
+            segments[i] = mSegments[i];
         }
         return segments;
     }

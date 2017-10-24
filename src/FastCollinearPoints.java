@@ -6,9 +6,9 @@ import edu.princeton.cs.algs4.In;
 public class FastCollinearPoints {
     private final Point[] points;
 
-    private LineSegment[] lineSegments;
+    private final LineSegment[] lineSegments;
 
-    private int length = 0;
+    private final int length;
 
     public FastCollinearPoints(Point[] ps)     // finds all line segments containing 4 or more points
     {
@@ -26,8 +26,8 @@ public class FastCollinearPoints {
      * or contain repeated points. If so, throw a java.lang.IllegalArgumentException
      */
     private void validate(Point[] ps) {
-        if (ps == null)     throw new java.lang.IllegalArgumentException();
-
+        if (ps == null || (ps.length == 1 && ps[0] == null))     
+            throw new java.lang.IllegalArgumentException();
         for (int i = 0; i < ps.length; i++) {   // check whether null entry or repeated ones exist
             for (int j = i + 1; j < ps.length; j++) {
                 if (ps[i] == null || ps[j] == null || 
@@ -42,23 +42,23 @@ public class FastCollinearPoints {
         Line[] lines = getLines(points);
         return getSegmentsByLines(lines);
     }
-    
+
     private Line[] getLines(Point[] ps) {
-        Line[] lines = new Line[points.length * (points.length + 1) / 2];
+        Line[] lines = new Line[ps.length * (ps.length + 1) / 2];
         int index = 0;
 
-        for (int i = 0; i < points.length - 3; i++) {
-            Point origin = points[i];
+        for (int i = 0; i < ps.length - 3; i++) {
+            Point origin = ps[i];
             Comparator<Point> sortOrder = origin.slopeOrder();
 
-            Point[] mPoints = new Point[points.length - i - 1]; // copy to sort and store operation
-            for (int j = i + 1; j < points.length; j++) {
-                mPoints[j - i - 1] = points[j];
+            Point[] mPoints = new Point[ps.length - i - 1]; // copy to sort and store operation
+            for (int j = i + 1; j < ps.length; j++) {
+                mPoints[j - i - 1] = ps[j];
             }
             Arrays.sort(mPoints, sortOrder);  // sort with order origin.slopeOrder()
-
+            
             int left = 0;       // pivots for getting maximum lines 
-            int right = 1;
+            int right = 0;
             while (left < mPoints.length && right < mPoints.length) {
                 while (right < mPoints.length &&  
                         sortOrder.compare(mPoints[left], mPoints[right]) == 0) {    // same slope
@@ -69,29 +69,28 @@ public class FastCollinearPoints {
 //                    System.out.println(String.format("new Line : %s", lines[index - 1].toString()));
                 }
                 left = right;
-                right = right + 1;
             }
         }
         Line[] newLines = new Line[index];
         for (int i = 0; i < index; i++) {
             newLines[i] = lines[i];
         }
-        lines = trim(newLines, index);      // there may be some repeated lines here
-        
+        lines = trim(newLines);      // there may be some repeated lines here
+
         return lines;
     }
     /**
      * after sort, lines got larger slope or smaller min point when same slope is latter
      */
-    private Line[] trim(Line[] lines, int index) {
+    private Line[] trim(Line[] lines) {
         Arrays.sort(lines);
-        
-//        System.out.println("-----------sorted Lines---------------");
-//        for (Line l : lines)
-//            System.out.println(l.toString());
-//        System.out.println("-----------sorted Lines---------------");
+
+        //        System.out.println("-----------sorted Lines---------------");
+        //        for (Line l : lines)
+        //            System.out.println(l.toString());
+        //        System.out.println("-----------sorted Lines---------------");
         int left = 0;
-        int right = 1;
+        int right = 0;
         int pivot = 0;
         while (left < lines.length && right < lines.length) {
             while (right < lines.length  && lines[left].getMax().compareTo(lines[right].getMax()) == 0 && 
@@ -100,7 +99,6 @@ public class FastCollinearPoints {
             }
             lines[pivot++] = lines[right - 1];
             left = right;
-//            right = right + 1;
         }
         Line[] newLine = new Line[pivot];
         for (int i = 0; i < pivot; i++)
@@ -108,16 +106,16 @@ public class FastCollinearPoints {
         return newLine;
     }
     private LineSegment[] getSegmentsByLines(Line[] lines) {
-        LineSegment[] lineSegments = new LineSegment[lines.length];
+        LineSegment[] mSegments = new LineSegment[lines.length];
         for (int i = 0; i < lines.length; i++) {
-            lineSegments[i] = new LineSegment(lines[i].getMin(), lines[i].getMax());
+            mSegments[i] = new LineSegment(lines[i].getMin(), lines[i].getMax());
         }
-        return lineSegments;
+        return mSegments;
     }
-    
-    private class Line implements Comparable<Line>{
-        private Point min;
-        private Point max;
+
+    private class Line implements Comparable<Line> {
+        private final Point min;
+        private final Point max;
         private double slope;
         public Line(Point mMin, Point mMax) {
             this.min = mMin;
@@ -139,18 +137,18 @@ public class FastCollinearPoints {
             return "Line " + min + " -> " + max + " slope=" + slope;
         }
         @Override
-        public int compareTo(Line o) {
-            if (Double.compare(getSlope(), o.getSlope()) < 0)    return -1;
-            if (Double.compare(getSlope(), o.getSlope()) > 0)    return 1;
+        public int compareTo(Line mLine) {
+            if (Double.compare(getSlope(), mLine.getSlope()) < 0)    return -1;
+            if (Double.compare(getSlope(), mLine.getSlope()) > 0)    return 1;
             else {
-                if (getMax().compareTo(o.getMax()) > 0)
+                if (getMax().compareTo(mLine.getMax()) > 0)
                     return 1;
-                else if (getMax().compareTo(o.getMax()) < 0)
+                else if (getMax().compareTo(mLine.getMax()) < 0)
                     return -1;
                 else {
-                    if (getMin().compareTo(o.getMin()) < 0)     // this line has smaller min point than o, so it's **bigger**
+                    if (getMin().compareTo(mLine.getMin()) < 0)     // this line has smaller min point than mLine, so it's **bigger**
                         return 1;
-                    else if (getMin().compareTo(o.getMin()) > 0) // this line has bigger min point than o, so it's **smaller**
+                    else if (getMin().compareTo(mLine.getMin()) > 0) // this line has bigger min point than mLine, so it's **smaller**
                         return -1;
                     else
                         return 0;
