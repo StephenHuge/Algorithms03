@@ -21,6 +21,18 @@ public class FastCollinearPoints {
         lineSegments = getSegments();
         length = lineSegments.length;
     }
+    public int numberOfSegments()                  // the number of line segments
+    {
+        return length;
+    }
+    public LineSegment[] segments()                // the line segments
+    {
+        LineSegment[] newSegments = new LineSegment[lineSegments.length];
+        for (int i = 0; i < lineSegments.length; i++) {
+            newSegments[i] = lineSegments[i];
+        }
+        return newSegments;
+    }
     /**
      * validate method, check whether array points is null, members of points are null
      * or contain repeated points. If so, throw a java.lang.IllegalArgumentException
@@ -40,14 +52,22 @@ public class FastCollinearPoints {
 
     private LineSegment[] getSegments() {
         Line[] lines = getLines(points);
-        return getSegmentsByLines(lines);
+        LineSegment[] lineSegments = getSegmentsByLines(lines);
+        return lineSegments;
     }
 
     private Line[] getLines(Point[] ps) {
         Line[] lines = new Line[ps.length * (ps.length + 1) / 2];
+        int length = generateLines(ps, lines);
+        lines = trim(lines, length);      // there may be some repeated lines in array lines, clear the repeated
+        return lines;
+    }
+    /**
+     * generate all the lines suitable, return lines's length
+     */
+    private int generateLines(Point[] ps, Line[] lines) {
         int index = 0;
-
-        for (int i = 0; i < ps.length - 3; i++) {
+        for (int i = 0; i < ps.length - 3; i++) {   // no need to iterate last 3 points, at least 3 points in one line 
             Point origin = ps[i];
             Comparator<Point> sortOrder = origin.slopeOrder();
 
@@ -55,36 +75,35 @@ public class FastCollinearPoints {
             for (int j = i + 1; j < ps.length; j++) {
                 mPoints[j - i - 1] = ps[j];
             }
-            // sort with order origin.slopeOrder(), this sort is stable, so don't worry about whether mPoints is ordered
+            // sort with order origin.slopeOrder(), this sort is stable, 
+            // so don't worry about whether points with same slope is ordered 
             Arrays.sort(mPoints, sortOrder);  
 
             int left = 0;       // pivots for getting maximum lines 
             int right = 0;
             while (left < mPoints.length && right < mPoints.length) {
-                while (right < mPoints.length &&  
-                        sortOrder.compare(mPoints[left], mPoints[right]) == 0) {    // same slope
+                while (right < mPoints.length && sortOrder.compare(mPoints[left], mPoints[right]) == 0) { // same slope
                     right++;
                 } 
-                if (right - left >= 3) {            // if there are any 3 (or more) adjacent points, add a new line
+                if (right - left >= 3) {   // if there are any 3 (or more) adjacent points, add a new line
                     lines[index++] = new Line(origin, mPoints[right - 1]);
                     //                    System.out.println(String.format("new Line : %s", lines[index - 1].toString()));
                 }
                 left = right;
             }
         }
-        Line[] newLines = new Line[index];
-        for (int i = 0; i < index; i++) {
-            newLines[i] = lines[i];
-        }
-        lines = trim(newLines);      // there may be some repeated lines here
-
-        return lines;
+        return index;
     }
     /**
      * after sort, lines got larger slope or smaller min point when same slope is latter
      */
-    private Line[] trim(Line[] lines) {
-        Arrays.sort(lines);
+    private Line[] trim(Line[] lines, int index) {
+        Line[] newLines = new Line[index];
+        for (int i = 0; i < index; i++) {
+            newLines[i] = lines[i];
+        }
+        lines = newLines;
+        Arrays.sort(lines);         // lines is sorted
 
         //        System.out.println("-----------sorted Lines---------------");
         //        for (Line l : lines)
@@ -94,8 +113,7 @@ public class FastCollinearPoints {
         int right = 0;
         int pivot = 0;
         while (left < lines.length && right < lines.length) {
-            while (right < lines.length  && lines[left].getMax().compareTo(lines[right].getMax()) == 0 && 
-                    Double.compare(lines[left].getSlope(), lines[right].getSlope()) == 0) {
+            while (right < lines.length  && new LineComparator().compare(lines[left], lines[right])== 0) {
                 right++;
             }
             lines[pivot++] = lines[right - 1];
@@ -113,7 +131,24 @@ public class FastCollinearPoints {
         }
         return mSegments;
     }
+    /**
+     * the difference from {@link Line#compareTo(Line)} is this comparator doesn't compare min points of two lines,
+     * this class just compare lines by slopes and max points.
+     */
+    private class LineComparator implements Comparator<Line> {
 
+        @Override
+        public int compare(Line l1, Line l2) {
+            if (Double.compare(l1.getSlope(), l2.getSlope()) < 0)    return -1;
+            if (Double.compare(l1.getSlope(), l2.getSlope()) > 0)    return 1;
+            else {
+                if (l1.getMax().compareTo(l2.getMax()) > 0)          return 1;
+                else if (l1.getMax().compareTo(l2.getMax()) < 0)     return -1;
+                return 0;
+            }
+        }
+
+    }
     private class Line implements Comparable<Line> {
         private final Point min;
         private final Point max;
@@ -157,18 +192,7 @@ public class FastCollinearPoints {
             }
         }
     }
-    public int numberOfSegments()                  // the number of line segments
-    {
-        return length;
-    }
-    public LineSegment[] segments()                // the line segments
-    {
-        LineSegment[] newSegments = new LineSegment[lineSegments.length];
-        for (int i = 0; i < lineSegments.length; i++) {
-            newSegments[i] = lineSegments[i];
-        }
-        return newSegments;
-    }
+    
     public static void main(String[] args) {
         In in = new In(args[0]);
         int n = in.readInt();
