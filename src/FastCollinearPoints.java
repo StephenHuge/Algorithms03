@@ -55,8 +55,9 @@ public class FastCollinearPoints {
             for (int j = i + 1; j < ps.length; j++) {
                 mPoints[j - i - 1] = ps[j];
             }
-            Arrays.sort(mPoints, sortOrder);  // sort with order origin.slopeOrder()
-            
+            // sort with order origin.slopeOrder(), this sort is stable, so don't worry about whether mPoints is ordered
+            Arrays.sort(mPoints, sortOrder);  
+
             int left = 0;       // pivots for getting maximum lines 
             int right = 0;
             while (left < mPoints.length && right < mPoints.length) {
@@ -64,9 +65,9 @@ public class FastCollinearPoints {
                         sortOrder.compare(mPoints[left], mPoints[right]) == 0) {    // same slope
                     right++;
                 } 
-                if (right - left >= 3) {            // more than 3 points, add new line
+                if (right - left >= 3) {            // if there are any 3 (or more) adjacent points, add a new line
                     lines[index++] = new Line(origin, mPoints[right - 1]);
-//                    System.out.println(String.format("new Line : %s", lines[index - 1].toString()));
+                    //                    System.out.println(String.format("new Line : %s", lines[index - 1].toString()));
                 }
                 left = right;
             }
