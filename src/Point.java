@@ -96,12 +96,7 @@ public class Point implements Comparable<Point> {
 
         if (dY < 0)  return -1;
         if (dY > 0)  return 1;
-        else {
-            if (dX < 0)  return -1;        
-            if (dX > 0)  return 1;
-            return 0;
-        }
-
+        else    return dX > 0 ? 1 : (dX == 0 ? 0 : -1);
     }
 
     /**
@@ -120,10 +115,9 @@ public class Point implements Comparable<Point> {
 
                 double slope1 = slopeTo(p1);
                 double slope2 = slopeTo(p2);
-
-                if (Double.compare(slope1, slope2) > 0)     return 1;
-                if (Double.compare(slope1, slope2) < 0)     return -1;
-                return 0;
+                int result = Double.compare(slope1, slope2);
+                
+                return result > 0 ? 1 : (result == 0 ? 0 : -1);
             }
         };
     }
